@@ -4,7 +4,7 @@ import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
+//import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,7 +62,7 @@ public final class PluginUtils {
         plugin.saveDefaultConfig();
 
         // add auto update
-        Objects.requireNonNull(plugin.getConfig().getDefaults()).set("auto-update", true);
+        //Objects.requireNonNull(plugin.getConfig().getDefaults()).set("auto-update", true);
 
         // remove unused fields in config
         clearUnused(plugin.getConfig(), plugin.getConfig().getDefaults());
@@ -74,7 +74,7 @@ public final class PluginUtils {
         plugin.saveConfig();
 
         // auto update
-        if (plugin.getConfig().getBoolean("auto-update")) {
+        /*if (plugin.getConfig().getBoolean("auto-update")) {
             if (plugin.getDescription().getVersion().startsWith("DEV - ")) {
                 new GitHubBuildsUpdater(plugin, file, url).start();
             }
@@ -86,7 +86,7 @@ public final class PluginUtils {
                     "Until you update to the latest version!",
                     "#######################################"
             ));
-        }
+        }*/
     }
 
     /**

@@ -80,34 +80,34 @@ public final class MenuPreset {
     }
     
     public static final ItemStack invalidInput = makeUnique(new CustomItem(
-            Material.BARRIER, "&cInvalid Input!")
+            Material.BARRIER, "&c無效輸入!")
     );
     public static final ItemStack inputAnItem = makeUnique(new CustomItem(
-            Material.BLUE_STAINED_GLASS_PANE, "&9Input an item")
+            Material.BLUE_STAINED_GLASS_PANE, "&9輸入物品")
     );
     public static final ItemStack invalidRecipe = makeUnique(new CustomItem(
-            Material.BARRIER, "&cInvalid Recipe!")
+            Material.BARRIER, "&c無效配方!")
     );
     public static final ItemStack notEnoughEnergy = makeUnique(new CustomItem(
-            Material.RED_STAINED_GLASS_PANE, "&cNot enough energy!")
+            Material.RED_STAINED_GLASS_PANE, "&c能源不足!")
     );
     public static final ItemStack notEnoughRoom = makeUnique(new CustomItem(
-            Material.ORANGE_STAINED_GLASS_PANE, "&6Not enough room!")
+            Material.ORANGE_STAINED_GLASS_PANE, "&6房間不足!")
     );
     public static final ItemStack borderItemInput = makeUnique(new CustomItem(
-            Material.BLUE_STAINED_GLASS_PANE, "&9Input")
+            Material.BLUE_STAINED_GLASS_PANE, "&9輸入")
     );
     public static final ItemStack borderItemOutput = makeUnique(new CustomItem(
-            Material.ORANGE_STAINED_GLASS_PANE, "&6Output")
+            Material.ORANGE_STAINED_GLASS_PANE, "&6輸出")
     );
     public static final ItemStack borderItemStatus = makeUnique(new CustomItem(
-            Material.CYAN_STAINED_GLASS_PANE, "&3Status")
+            Material.CYAN_STAINED_GLASS_PANE, "&3狀態")
     );
     public static final ItemStack connectToEnergyNet = makeUnique(new CustomItem(
-            Material.RED_STAINED_GLASS_PANE, "&cConnect to an energy network!")
+            Material.RED_STAINED_GLASS_PANE, "&c連接至一個能源網路!")
     );
     public static final ItemStack loadingItemRed = makeUnique(new CustomItem(
-            Material.RED_STAINED_GLASS_PANE, "&cLoading...")
+            Material.RED_STAINED_GLASS_PANE, "&c載入中...")
     );
     
 }
