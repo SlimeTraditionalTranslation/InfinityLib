@@ -92,7 +92,7 @@ public final class MenuPreset {
             Material.RED_STAINED_GLASS_PANE, "&c能源不足!")
     );
     public static final ItemStack notEnoughRoom = makeUnique(new CustomItem(
-            Material.ORANGE_STAINED_GLASS_PANE, "&6房間不足!")
+            Material.ORANGE_STAINED_GLASS_PANE, "&6空間不足!")
     );
     public static final ItemStack borderItemInput = makeUnique(new CustomItem(
             Material.BLUE_STAINED_GLASS_PANE, "&9輸入")
