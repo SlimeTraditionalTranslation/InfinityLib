@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.experimental.UtilityClass;
 //import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import org.apache.commons.lang.Validate;
+//import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -90,6 +91,17 @@ public final class PluginUtils {
     }
 
     /**
+     * Creates metrics and adds a pie chart for auto updates with the id "auto_updates"
+     */
+    /*@Nonnull
+    public static Metrics setupMetrics(int id) {
+        Metrics metrics = new Metrics(plugin, id);
+        // add auto update pie
+        metrics.addCustomChart(new Metrics.SimplePie("auto_updates", () -> String.valueOf(plugin.getConfig().getBoolean("auto-update"))));
+        return metrics;
+    }*/
+
+    /**
      * Recursively clears unused fields in a config
      */
     private static void clearUnused(ConfigurationSection config, ConfigurationSection defaultConfig) {
@@ -103,7 +115,7 @@ public final class PluginUtils {
             }
         }
     }
-
+    
     @Nonnull
     public static NamespacedKey getKey(@Nonnull String key) {
         return new NamespacedKey(plugin, key);
