@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.experimental.UtilityClass;
 //import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import org.apache.commons.lang.Validate;
-//import org.bstats.bukkit.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
