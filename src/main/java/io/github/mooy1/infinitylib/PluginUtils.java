@@ -93,13 +93,13 @@ public final class PluginUtils {
     /**
      * Creates metrics and adds a pie chart for auto updates with the id "auto_updates"
      */
-    /*@Nonnull
+    @Nonnull
     public static Metrics setupMetrics(int id) {
         Metrics metrics = new Metrics(plugin, id);
         // add auto update pie
         metrics.addCustomChart(new Metrics.SimplePie("auto_updates", () -> String.valueOf(plugin.getConfig().getBoolean("auto-update"))));
         return metrics;
-    }*/
+    }
 
     /**
      * Recursively clears unused fields in a config
