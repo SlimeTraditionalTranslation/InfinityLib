@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib.recipes.strict;
+package io.github.mooy1.infinitylib.recipes.normalstrict;
 
 import io.github.mooy1.infinitylib.items.StackUtils;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +15,7 @@ final class StrictRecipe {
 
     StrictRecipe(@Nonnull ItemStack item) {
         this.id = StackUtils.getIDorType(item);
-        this.amount = hashCode();
+        this.amount = item.getAmount();
     }
 
     @Override
@@ -26,8 +26,8 @@ final class StrictRecipe {
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof StrictRecipe)) return false;
-        StrictRecipe input = (StrictRecipe) obj;
-        return input.amount >= this.amount && input.id.equals(this.id);
+        StrictRecipe recipe = (StrictRecipe) obj;
+        return recipe.amount <= this.amount && recipe.id.equals(this.id);
     }
 
 }
