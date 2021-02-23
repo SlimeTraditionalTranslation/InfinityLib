@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * A slimefun item with a menu
@@ -56,17 +57,19 @@ public abstract class AbstractContainer extends SlimefunItem {
             }
         };
         
-        addItemHandler((BlockBreakHandler) (e, item1, fortune, drops) -> {
-            BlockMenu menu = BlockStorage.getInventory(e.getBlock());
-            if (menu != null) {
-                onBreak(e, menu, e.getBlock().getLocation());
+        addItemHandler(new BlockBreakHandler(false, false) {
+            @Override
+            public void onPlayerBreak(@Nonnull BlockBreakEvent e, @Nonnull ItemStack itemStack, @Nonnull List<ItemStack> list) {
+                BlockMenu menu = BlockStorage.getInventory(e.getBlock());
+                if (menu != null) {
+                    onBreak(e, menu, e.getBlock().getLocation());
+                }
             }
-            return true;
         });
         
         addItemHandler(new BlockPlaceHandler(false) {
             @Override
-            public void onPlayerPlace(BlockPlaceEvent e) {
+            public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 onPlace(e, e.getBlockPlaced());
             }
         });
