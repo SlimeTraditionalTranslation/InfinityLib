@@ -11,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import javax.annotation.Nonnull;
-
 /**
  * Collection of utils for creating BlockMenuPresets
  *
@@ -63,18 +61,12 @@ public final class MenuPreset {
             preset.addItem(i, borderItemOutput, ChestMenuUtils.getEmptyClickHandler());
         }
     }
-
-    private static final NamespacedKey key = PluginUtils.getKey("unique");
     
-    @Nonnull
-    public static ItemStack getUnique(@Nonnull ItemStack item) {
-        return makeUnique(item.clone());
-    }
+    private static final NamespacedKey UNIQUE_KEY = PluginUtils.getKey("unique");
 
-    @Nonnull
-    public static ItemStack makeUnique(@Nonnull ItemStack item) {
+    private static ItemStack makeUnique(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
+        meta.getPersistentDataContainer().set(UNIQUE_KEY, PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);
         return item;
     }
