@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib;
+package io.github.mooy1.infinitylib.core;
 
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
@@ -35,9 +35,6 @@ public final class PluginUtils {
 
     @Getter
     private static int currentTick = 0;
-
-    @Getter
-    private static long timings = 0;
 
     @Getter
     private static String prefix = null;
@@ -135,16 +132,13 @@ public final class PluginUtils {
         Bukkit.getPluginManager().registerEvents(listener, plugin);
     }
 
-    public static void startTicker(@Nonnull Runnable onTick) {
+    public static void startTicker() {
         scheduleRepeatingSync(() -> {
-            long time = System.currentTimeMillis();
-            if (currentTick == 6000) {
+            if (currentTick == 24000) {
                 currentTick = 1;
             } else {
                 currentTick++;
             }
-            onTick.run();
-            timings = System.currentTimeMillis() - time;
         }, TICKER_DELAY);
     }
 

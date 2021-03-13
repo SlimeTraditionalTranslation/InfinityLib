@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib.abstracts;
+package io.github.mooy1.infinitylib.slimefun.abstracts;
 
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
@@ -40,7 +40,7 @@ public abstract class AbstractTicker extends AbstractContainer {
     protected abstract void tick(@Nonnull BlockMenu menu, @Nonnull Block b, @Nonnull Config data);
     
     protected boolean synchronised() {
-        return true;
+        return false;
     }
     
 }
