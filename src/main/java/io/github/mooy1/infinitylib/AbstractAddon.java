@@ -2,14 +2,14 @@ package io.github.mooy1.infinitylib;
 
 import io.github.mooy1.infinitylib.commands.AbstractCommand;
 import io.github.mooy1.infinitylib.slimefun.utils.TickerUtils;
+import io.github.thebusybiscuit.slimefun4.api.MinecraftVersion;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
-import lombok.AccessLevel;
 import lombok.Getter;
 import me.mrCookieSlime.Slimefun.cscorelib2.chat.ChatColors;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
-import org.bstats.bukkit.Metrics;
+//import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -44,62 +44,64 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     
     @Getter
     private int globalTick = 0;
-    @Getter(AccessLevel.PROTECTED)
-    private Metrics metrics;
+    //@Getter
+    //private Metrics metrics;
     
     @Override
     @OverridingMethodsMustInvokeSuper
     public void onEnable() {
         
-        // copy config if not present
-        saveDefaultConfig();
-
-        // add auto update
-        //Objects.requireNonNull(getConfig().getDefaults()).set("auto-update", true);
-
-        // remove unused fields in config
-        for (String key : getConfig().getKeys(true)) {
-            if (!getConfig().getDefaults().contains(key)) {
-                getConfig().set(key, null);
-            }
-        }
-
-        // copy defaults and header to update stuff
-        getConfig().options().copyDefaults(true).copyHeader(true);
-
-        // save
-        saveConfig();
-
-        // auto update
-        /*if (getConfig().getBoolean("auto-update")) {
-            if (getDescription().getVersion().startsWith("DEV - ")) {
-                new GitHubBuildsUpdater(this, getFile(), getGithubPath()).start();
-            }
-        } else {
-            runSync(() -> log(
-                    "#######################################",
-                    "Auto Updates have been disabled for " + getName(),
-                    "You will receive no support for bugs",
-                    "Until you update to the latest version!",
-                    "#######################################"
-            ));
-        }*/
-
         // global ticker
         scheduleRepeatingSync(() -> this.globalTick++, TickerUtils.TICKS);
-
-        // metrics
-        /*if (getMetricsID() != -1) {
-            this.metrics = new Metrics(this, getMetricsID());
-            this.metrics.addCustomChart(new Metrics.SimplePie("auto_updates", () -> String.valueOf(getConfig().getBoolean("auto-update"))));
-        }*/
         
         // commands
-        PluginCommand command = getCommand(getName().toLowerCase(Locale.ROOT));
-        if (command != null) {
-            List<AbstractCommand> commands = new ArrayList<>(getSubCommands());
-            commands.add(new AddonInfoCommand(this));
-            new CommandHelper(command, commands);
+        PluginCommand command = Objects.requireNonNull(getCommand(getName().toLowerCase(Locale.ROOT)), "Make sure to set a command with the plugin's name in your plugin.yml");
+        List<AbstractCommand> commands = new ArrayList<>(getSubCommands());
+        commands.add(new AddonInfoCommand(this));
+        new CommandHelper(command, commands);
+
+        // stuff that cant be done in unit test
+        if (SlimefunPlugin.getMinecraftVersion() != MinecraftVersion.UNIT_TEST) {
+
+            // copy config if not present
+            saveDefaultConfig();
+
+            // add auto update
+            //Objects.requireNonNull(getConfig().getDefaults()).set("auto-update", true);
+
+            // remove unused fields in config
+            for (String key : getConfig().getKeys(true)) {
+                if (!getConfig().getDefaults().contains(key)) {
+                    getConfig().set(key, null);
+                }
+            }
+
+            // copy defaults and header to update stuff
+            getConfig().options().copyDefaults(true).copyHeader(true);
+
+            // save
+            saveConfig();
+
+            // auto update
+            /*if (getConfig().getBoolean("auto-update")) {
+                if (getDescription().getVersion().startsWith("DEV - ")) {
+                    new GitHubBuildsUpdater(this, getFile(), getGithubPath()).start();
+                }
+            } else {
+                runSync(() -> log(
+                        "#######################################",
+                        "Auto Updates have been disabled for " + getName(),
+                        "You will receive no support for bugs",
+                        "Until you update to the latest version!",
+                        "#######################################"
+                ));
+            }*/
+
+            // metrics
+            /*if (getMetricsID() != -1) {
+                this.metrics = new Metrics(this, getMetricsID());
+                this.metrics.addCustomChart(new Metrics.SimplePie("auto_updates", () -> String.valueOf(getConfig().getBoolean("auto-update"))));
+            }*/
         }
     }
 
