@@ -24,11 +24,11 @@ public final class TestAddon extends AbstractAddon {
         super.onEnable();
     }
 
-    @Nullable
-    @Override
-    protected Metrics setupMetrics() {
+    //@Nullable
+    //@Override
+    /*protected Metrics setupMetrics() {
         return null;
-    }
+    }*/
 
     @Nonnull
     @Override

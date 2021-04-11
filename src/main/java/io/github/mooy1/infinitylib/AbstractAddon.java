@@ -6,7 +6,7 @@ import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 import lombok.Getter;
 import me.mrCookieSlime.Slimefun.cscorelib2.chat.ChatColors;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
+//import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 //import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -104,8 +104,8 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     /**
      * return your metrics or null
      */
-    @Nullable
-    protected abstract Metrics setupMetrics();
+    //@Nullable
+    //protected abstract Metrics setupMetrics();
 
     /**
      * return the github path in the format user/repo/branch, for example Mooy1/InfinityExpansion/master
