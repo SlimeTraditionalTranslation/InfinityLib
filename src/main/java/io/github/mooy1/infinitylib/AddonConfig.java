@@ -29,33 +29,36 @@ public final class AddonConfig extends YamlConfiguration {
     private final Map<String, String> comments = new HashMap<>();
     private final AbstractAddon addon;
     private final File file;
-    
+
     AddonConfig(AbstractAddon addon, String path) {
         this.addon = addon;
         this.file = new File(addon.getDataFolder(), path);
-        
+        YamlConfiguration defaults = new YamlConfiguration();
         try {
-            YamlConfiguration defaults = new YamlConfiguration();
             defaults.loadFromString(loadDefaults(path));
-            //defaults.set("auto-update", true);
-            //this.comments.put("auto-update", "\n# This must be enabled to receive support!\n");
-            setDefaults(defaults);
-
-            if (this.file.exists()) {
-                load(this.file);
-            }
-            
-            for (String key : getKeys(true)) {
-                if (!defaults.contains(key)) {
-                    set(key, null);
-                }
-            }
-            
-            save(this.file);
-            
-        } catch (InvalidConfigurationException | IOException e) {
+        } catch (InvalidConfigurationException e) {
+            addon.log(Level.SEVERE, "There was an error loading the defaults of '" + path + "'!");
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        defaults.set("auto-update", true);
+        this.comments.put("auto-update", "\n# This must be enabled to receive support!\n");
+        setDefaults(defaults);
+        if (this.file.exists()) {
+            try {
+                load(this.file);
+            } catch (InvalidConfigurationException e) {
+                addon.log(Level.SEVERE, "There was an error loading the config '" + path + "', resetting to default!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (String key : getKeys(true)) {
+            if (!defaults.contains(key)) {
+                set(key, null);
+            }
+        }
+        save();
     }
     
     public int getInt(String path, int min, int max) {
@@ -83,10 +86,6 @@ public final class AddonConfig extends YamlConfiguration {
             e.printStackTrace();
         }
     }
-
-    /*boolean autoUpdatesEnabled() {
-        return getBoolean("auto-update");
-    }*/
     
     @Nonnull
     @Override
@@ -111,7 +110,12 @@ public final class AddonConfig extends YamlConfiguration {
         List<Integer> dotIndexes = new ArrayList<>(2);
         for (String line : lines) {
             // append the comment and line
-            save.append(this.comments.get(appendPath(pathBuilder, dotIndexes, line))).append(line).append('\n');
+            String comment = this.comments.get(appendPath(pathBuilder, dotIndexes, line));
+            if (comment == null) {
+                save.append('\n').append(line).append('\n');
+            } else {
+                save.append(comment).append(line).append('\n');
+            }
         }
         return save.toString();
     }
@@ -123,32 +127,30 @@ public final class AddonConfig extends YamlConfiguration {
         StringBuilder commentBuilder = new StringBuilder();
         StringBuilder pathBuilder = new StringBuilder();
         List<Integer> dotIndexes = new ArrayList<>(2);
-        try {
-            String line;
-            while ((line = input.readLine()) != null) {
-                yamlBuilder.append(line).append('\n');
-                // load comment
-                if (StringUtils.isBlank(line)) {
-                    // add blank line
-                    commentBuilder.append(line).append('\n');
-                } else if (line.contains("#")) {
-                    // add new line if none before first comment
-                    if (commentBuilder.length() == 0) {
-                        commentBuilder.append('\n');
-                    }
-                    commentBuilder.append(line).append('\n');
-                } else if (commentBuilder.length() == 0) {
-                    // add new line
-                    this.comments.put(appendPath(pathBuilder, dotIndexes, line), "\n");
-                } else {
-                    // add comment and reset
-                    this.comments.put(appendPath(pathBuilder, dotIndexes, line), commentBuilder.toString());
-                    commentBuilder = new StringBuilder();
+        String line;
+        while ((line = input.readLine()) != null) {
+            // fix messed up lines
+            yamlBuilder.append(line).append('\n');
+            // load comment
+            if (StringUtils.isBlank(line)) {
+                // add blank line
+                commentBuilder.append(line).append('\n');
+            } else if (line.contains("#")) {
+                // add new line if none before first comment
+                if (commentBuilder.length() == 0) {
+                    commentBuilder.append('\n');
                 }
+                commentBuilder.append(line).append('\n');
+            } else if (commentBuilder.length() == 0) {
+                // no comment
+                appendPath(pathBuilder, dotIndexes, line);
+            } else {
+                // add comment and reset
+                this.comments.put(appendPath(pathBuilder, dotIndexes, line), commentBuilder.toString());
+                commentBuilder = new StringBuilder();
             }
-        } finally {
-            input.close();
         }
+        input.close();
         return yamlBuilder.toString();
     }
 
