@@ -5,29 +5,16 @@ import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.mooy1.infinitylib.items.StackUtils;
-import io.github.mooy1.infinitylib.slimefun.recipes.RecipeInput;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 
 /**
  * A large recipe which stores a string of all ids/materials and amounts
  */
-public class StrictMultiInput extends RecipeInput {
+public class StrictMultiInput {
 
     private final String string;
     @Getter
     private final int[] amounts;
-
-    public StrictMultiInput(ItemStack[] recipe, int[] amounts) {
-        StringBuilder builder = new StringBuilder();
-        for (ItemStack item : recipe) {
-            if (item != null) {
-                builder.append(StackUtils.getIDorType(item));
-            }
-            builder.append(';');
-        }
-        this.string = builder.toString();
-        this.amounts = amounts;
-    }
 
     public StrictMultiInput(ItemStack[] recipe) {
         StringBuilder builder = new StringBuilder();

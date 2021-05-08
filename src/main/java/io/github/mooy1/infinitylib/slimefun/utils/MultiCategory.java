@@ -1,5 +1,7 @@
 package io.github.mooy1.infinitylib.slimefun.utils;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.annotation.Nonnull;
 
 import org.bukkit.ChatColor;
@@ -35,6 +37,7 @@ public final class MultiCategory extends FlexCategory {
     
     public MultiCategory(NamespacedKey key, ItemStack item, int tier, Category... subCategories) {
         super(key, item, tier);
+        Arrays.sort(subCategories, Comparator.comparingInt(Category::getTier));
         this.subCategories = subCategories;
     }
 
@@ -107,9 +110,10 @@ public final class MultiCategory extends FlexCategory {
     @Override
     public void register(@Nonnull SlimefunAddon addon) {
         super.register(addon);
-        
         for (Category category : this.subCategories) {
-            category.register(addon);
+            if (!category.isRegistered()) {
+                category.register(addon);
+            }
         }
     }
 

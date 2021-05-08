@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib;
+package io.github.mooy1.infinitylib.configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +19,8 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import io.github.mooy1.infinitylib.AbstractAddon;
+
 /**
  * A config which is able to save all of it's comments and has some additional utility methods
  * 
@@ -27,30 +29,30 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public final class AddonConfig extends YamlConfiguration {
 
     private final Map<String, String> comments = new HashMap<>();
-    private final AbstractAddon addon;
     private final File file;
 
-    AddonConfig(AbstractAddon addon, String path) {
-        this.addon = addon;
+    public AddonConfig(AbstractAddon addon, String path) {
         this.file = new File(addon.getDataFolder(), path);
         YamlConfiguration defaults = new YamlConfiguration();
         try {
-            defaults.loadFromString(loadDefaults(path));
+            defaults.loadFromString(loadDefaults(addon, path));
         } catch (InvalidConfigurationException e) {
-            addon.log(Level.SEVERE, "There was an error loading the defaults of '" + path + "'!");
+            addon.log(Level.SEVERE, "There was an error loading the default config of '" + path + "', report this to the developers!");
+            return;
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
-        defaults.set("auto-update", true);
-        this.comments.put("auto-update", "\n# This must be enabled to receive support!\n");
         setDefaults(defaults);
         if (this.file.exists()) {
             try {
                 load(this.file);
             } catch (InvalidConfigurationException e) {
                 addon.log(Level.SEVERE, "There was an error loading the config '" + path + "', resetting to default!");
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
+                return;
             }
         }
         for (String key : getKeys(true)) {
@@ -61,11 +63,14 @@ public final class AddonConfig extends YamlConfiguration {
         save();
     }
     
+    public void addComment(String path, String comment) {
+        this.comments.putIfAbsent(path, comment);
+    }
+    
     public int getInt(String path, int min, int max) {
         int val = getInt(path);
         if (val < min || val > max) {
             set(path, val = getDefaults().getInt(path));
-            this.addon.log(Level.WARNING, "Config value at " + path + " was out of bounds, resetting to default!");
         }
         return val;
     }
@@ -74,7 +79,6 @@ public final class AddonConfig extends YamlConfiguration {
         double val = getDouble(path);
         if (val < min || val > max) {
             set(path, val = getDefaults().getDouble(path));
-            this.addon.log(Level.WARNING, "Config value at " + path + " was out of bounds, resetting to default!");
         }
         return val;
     }
@@ -120,9 +124,9 @@ public final class AddonConfig extends YamlConfiguration {
         return save.toString();
     }
 
-    private String loadDefaults(String filePath) throws IOException {
+    private String loadDefaults(AbstractAddon addon, String filePath) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
-                this.addon.getResource(filePath), () -> "No default config for " + filePath + "!"), Charsets.UTF_8));
+                addon.getResource(filePath), () -> "No default config for " + filePath + "!"), Charsets.UTF_8));
         StringBuilder yamlBuilder = new StringBuilder();
         StringBuilder commentBuilder = new StringBuilder();
         StringBuilder pathBuilder = new StringBuilder();
