@@ -4,10 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import lombok.experimental.UtilityClass;
 
 import org.bukkit.ChatColor;
@@ -35,17 +33,6 @@ public final class StackUtils {
 
     private static final NamespacedKey KEY = SlimefunPlugin.getItemDataService().getKey();
 
-    @Nullable
-    public static String getID(@Nonnull ItemStack item) {
-        if (item instanceof SlimefunItemStack) {
-            return ((SlimefunItemStack) item).getItemId();
-        }
-        if (!item.hasItemMeta()) {
-            return null;
-        }
-        return item.getItemMeta().getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
-    }
-    
     @Nonnull
     public static String getIDorType(@Nonnull ItemStack item) {
         String id = getID(item);
@@ -54,6 +41,22 @@ public final class StackUtils {
         } else {
             return id;
         }
+    }
+
+    @Nullable
+    public static String getID(@Nonnull ItemStack item) {
+        if (item instanceof SlimefunItemStack) {
+            return ((SlimefunItemStack) item).getItemId();
+        }
+        if (!item.hasItemMeta()) {
+            return null;
+        }
+        return getID(item.getItemMeta());
+    }
+
+    @Nullable
+    public static String getID(@Nonnull ItemMeta meta) {
+        return meta.getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
     }
 
     @Nullable
@@ -114,24 +117,24 @@ public final class StackUtils {
         return item;
     }
     
-    private static Method copyCBItemStackToNMS;
-    private static Method itemStackNameComponent;
-    private static Method componentToString;
+    private static Method COPY;
+    private static Method GET_NAME;
+    private static Method TO_STRING;
 
     static {
         try {
             Field field = ItemUtils.class.getDeclaredField("copy");
             field.setAccessible(true);
-            copyCBItemStackToNMS = (Method) field.get(null);
-            copyCBItemStackToNMS.setAccessible(true);
+            COPY = (Method) field.get(null);
+            COPY.setAccessible(true);
             field = ItemUtils.class.getDeclaredField("getName");
             field.setAccessible(true);
-            itemStackNameComponent = (Method) field.get(null);
-            itemStackNameComponent.setAccessible(true);
+            GET_NAME = (Method) field.get(null);
+            GET_NAME.setAccessible(true);
             field = ItemUtils.class.getDeclaredField("toString");
             field.setAccessible(true);
-            componentToString = (Method) field.get(null);
-            componentToString.setAccessible(true);
+            TO_STRING = (Method) field.get(null);
+            TO_STRING.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,7 +142,7 @@ public final class StackUtils {
     
     public static String getInternalName(@Nonnull ItemStack item) {
         try {
-            return ChatColor.WHITE + (String) componentToString.invoke(itemStackNameComponent.invoke(copyCBItemStackToNMS.invoke(null, item)));
+            return ChatColor.WHITE + (String) TO_STRING.invoke(GET_NAME.invoke(COPY.invoke(null, item)));
         } catch (Exception e) {
             e.printStackTrace();
             return ChatColor.RED + "ERROR";

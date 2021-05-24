@@ -3,6 +3,7 @@ package io.github.mooy1.infinitylib;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -19,10 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import io.github.mooy1.infinitylib.commands.AbstractCommand;
-import io.github.mooy1.infinitylib.commands.CommandManager;
+import io.github.mooy1.infinitylib.commands.CommandUtils;
 import io.github.mooy1.infinitylib.configuration.AddonConfig;
-import io.github.mooy1.infinitylib.slimefun.utils.TickerUtils;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 //import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 
 /**
@@ -33,11 +34,8 @@ import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon {
     
     private final String bugTrackerURL = "https://github.com/" + getGithubPath().substring(0, getGithubPath().lastIndexOf('/')) + "/issues";
-    
     @Getter
     private int globalTick;
-    
-    @Getter
     private AddonConfig config;
 
     /**
@@ -48,7 +46,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     }
 
     /**
-     * Mock Bukkit Constructor
+     * MockBukkit Constructor
      */
     @ParametersAreNonnullByDefault
     public AbstractAddon(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
@@ -58,51 +56,56 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     @Override
     @OverridingMethodsMustInvokeSuper
     public void onEnable() {
-        
+
         // config
         this.config = new AddonConfig(this, "config.yml");
 
-        // auto update
-        /*boolean autoUpdate = this.config.getBoolean(getAutoUpdatePath());
-        if (autoUpdate) {
-            if (getDescription().getVersion().startsWith("DEV - ")) {
-                new GitHubBuildsUpdater(this, getFile(), getGithubPath()).start();
-            }
-        } else {
-            runSync(() -> log(
-                    "#######################################",
-                    "Auto Updates have been disabled for " + getName(),
-                    "You will receive no support for bugs",
-                    "Until you update to the latest version!",
-                    "#######################################"
-            ));
-        }*/
-
         // metrics
-        /*Metrics metrics = setupMetrics();
-        if (metrics != null) {
-            String autoUpdates = String.valueOf(autoUpdate);
-            metrics.addCustomChart(new SimplePie("auto_updates", () -> autoUpdates));
+        //Metrics metrics = setupMetrics();
+
+        // check auto update
+        /*if (getAutoUpdatePath() != null && getDescription().getVersion().startsWith("DEV - ")) {
+
+            boolean autoUpdate = this.config.getBoolean(getAutoUpdatePath());
+
+            // update
+            if (autoUpdate) {
+                new GitHubBuildsUpdater(this, getFile(), getGithubPath()).start();
+            } else {
+                runSync(() -> log(
+                        "#######################################",
+                        "Auto Updates have been disabled for " + getName(),
+                        "You will receive no support for bugs",
+                        "Until you update to the latest version!",
+                        "#######################################"
+                ));
+            }
+
+            // add to metrics
+            if (metrics != null) {
+                String autoUpdates = String.valueOf(autoUpdate);
+                metrics.addCustomChart(new SimplePie("auto_updates", () -> autoUpdates));
+            }
         }*/
 
         // global ticker
-        scheduleRepeatingSync(() -> this.globalTick++, TickerUtils.TICKS);
+        scheduleRepeatingSync(() -> this.globalTick++, SlimefunPlugin.getTickerTask().getTickRate());
 
         // commands
         List<AbstractCommand> subCommands = setupSubCommands();
         if (subCommands != null) {
-            CommandManager.createSubCommands(this, getName(), setupSubCommands());
+            CommandUtils.createSubCommands(this, getCommandName(), setupSubCommands());
         }
     }
 
     /**
-     * return your metrics or null
+     * Return your metrics or null
      */
     //@Nullable
     //protected abstract Metrics setupMetrics();
 
     /**
-     * return the github path in the format user/repo/branch, for example Mooy1/InfinityExpansion/master
+     * return the auto update path in the format user/repo/branch, for example Mooy1/InfinityExpansion/master
      */
     @Nonnull
     protected abstract String getGithubPath();
@@ -124,10 +127,10 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     }
 
     /**
-     * Override this if you have a different path
+     * Override this if you have a different path, or null for no auto updates
      */
-    /*@Nonnull
-    public String getAutoUpdatePath() {
+    //@Nullable
+    /*public String getAutoUpdatePath() {
         return "auto-update";
     }*/
 
@@ -141,6 +144,22 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     @Override
     public final String getBugTrackerURL() {
         return this.bugTrackerURL;
+    }
+
+    @Nonnull
+    @Override
+    public final AddonConfig getConfig() {
+        return this.config;
+    }
+
+    @Override
+    public final void reloadConfig() {
+        this.config.reload();
+    }
+
+    @Override
+    public final void saveConfig() {
+        this.config.save();
     }
 
     public final NamespacedKey getKey(String s) {
