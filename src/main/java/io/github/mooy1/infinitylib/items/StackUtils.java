@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import lombok.experimental.UtilityClass;
 
 import org.bukkit.ChatColor;
@@ -43,10 +45,23 @@ public final class StackUtils {
         }
     }
 
+    @Nonnull
+    public static String getIDorType(@Nonnull ItemStack item, @Nonnull ItemMeta meta) {
+        String id = getID(meta);
+        if (id == null) {
+            return item.getType().toString();
+        } else {
+            return id;
+        }
+    }
+
     @Nullable
     public static String getID(@Nonnull ItemStack item) {
         if (item instanceof SlimefunItemStack) {
             return ((SlimefunItemStack) item).getItemId();
+        }
+        if (item instanceof FastItemStack) {
+            return ((FastItemStack) item).getID();
         }
         if (!item.hasItemMeta()) {
             return null;
@@ -86,14 +101,14 @@ public final class StackUtils {
             return new CustomItem(sfItem.getItem(), amount);
         } else {
             Material material = Material.getMaterial(id);
-            if (material != null){
+            if (material != null) {
                 return new ItemStack(material, amount);
             } else {
                 return null;
             }
         }
     }
-    
+
     @Nonnull
     public static ItemStack addLore(@Nonnull ItemStack item, @Nonnull String... lines) {
         ItemMeta meta = item.getItemMeta();
@@ -108,7 +123,7 @@ public final class StackUtils {
         item.setItemMeta(meta);
         return item;
     }
-    
+
     @Nonnull
     public static ItemStack removeEnchants(@Nonnull ItemStack item) {
         for (Enchantment e : item.getEnchantments().keySet()) {
@@ -116,7 +131,7 @@ public final class StackUtils {
         }
         return item;
     }
-    
+
     private static Method COPY;
     private static Method GET_NAME;
     private static Method TO_STRING;
@@ -135,20 +150,19 @@ public final class StackUtils {
             field.setAccessible(true);
             TO_STRING = (Method) field.get(null);
             TO_STRING.setAccessible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            // MockBukkit
         }
     }
-    
+
     public static String getInternalName(@Nonnull ItemStack item) {
         try {
             return ChatColor.WHITE + (String) TO_STRING.invoke(GET_NAME.invoke(COPY.invoke(null, item)));
         } catch (Exception e) {
-            e.printStackTrace();
             return ChatColor.RED + "ERROR";
         }
     }
-    
+
     public static String getDisplayName(@Nonnull ItemStack item, @Nonnull ItemMeta meta) {
         if (meta.hasDisplayName()) {
             return meta.getDisplayName();
@@ -165,5 +179,5 @@ public final class StackUtils {
         }
         return getInternalName(item);
     }
-    
+
 }

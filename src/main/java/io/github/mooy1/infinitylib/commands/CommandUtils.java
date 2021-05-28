@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
 import javax.annotation.Nonnull;
 
 import org.bukkit.command.Command;
@@ -18,13 +19,15 @@ import org.bukkit.command.TabExecutor;
 import io.github.mooy1.infinitylib.AbstractAddon;
 
 public final class CommandUtils implements TabExecutor {
-    
-    public static void createSubCommands(AbstractAddon addon, String commandName, List<AbstractCommand> subCommands) {
+
+    public static void setSubCommands(AbstractAddon addon, String commandName, List<AbstractCommand> subCommands) {
         PluginCommand command = Objects.requireNonNull(addon.getCommand(commandName),
                 () -> "No such command '" + commandName + "'!");
+
         subCommands = new ArrayList<>(subCommands);
         subCommands.add(new HelpCommand(subCommands, command));
         subCommands.add(new InfoCommand(addon));
+
         new CommandUtils(command, subCommands);
     }
 

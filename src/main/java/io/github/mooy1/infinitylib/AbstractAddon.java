@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.ParametersAreNonnullByDefault;
-import lombok.Getter;
 
 //import org.bstats.bukkit.Metrics;
 //import org.bstats.charts.SimplePie;
@@ -28,21 +27,20 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 
 /**
  * Extend this in your main plugin class
- * 
+ *
  * @author Mooy1
  */
 public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon {
-    
-    private final String bugTrackerURL = "https://github.com/" + getGithubPath().substring(0, getGithubPath().lastIndexOf('/')) + "/issues";
-    @Getter
+
     private int globalTick;
     private AddonConfig config;
+    private final String bugTrackerURL = "https://github.com/" + getGithubPath().substring(0, getGithubPath().lastIndexOf('/')) + "/issues";
 
     /**
      * Main Constructor
      */
     public AbstractAddon() {
-        
+
     }
 
     /**
@@ -52,7 +50,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     public AbstractAddon(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
-    
+
     @Override
     @OverridingMethodsMustInvokeSuper
     public void onEnable() {
@@ -94,21 +92,23 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         // commands
         List<AbstractCommand> subCommands = setupSubCommands();
         if (subCommands != null) {
-            CommandUtils.createSubCommands(this, getCommandName(), setupSubCommands());
+            CommandUtils.setSubCommands(this, getCommandName(), setupSubCommands());
         }
     }
-
-    /**
-     * Return your metrics or null
-     */
-    //@Nullable
-    //protected abstract Metrics setupMetrics();
 
     /**
      * return the auto update path in the format user/repo/branch, for example Mooy1/InfinityExpansion/master
      */
     @Nonnull
     protected abstract String getGithubPath();
+
+    /**
+     * Return your metrics or null
+     */
+    //@Nullable
+    /*protected Metrics setupMetrics() {
+        return null;
+    }*/
 
     /**
      * return your sub commands, use Arrays.asList(Commands...) or null for none.
@@ -134,12 +134,16 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         return "auto-update";
     }*/
 
+    public final int getGlobalTick() {
+        return this.globalTick;
+    }
+
     @Nonnull
     @Override
     public final JavaPlugin getJavaPlugin() {
         return this;
     }
-    
+
     @Nonnull
     @Override
     public final String getBugTrackerURL() {
