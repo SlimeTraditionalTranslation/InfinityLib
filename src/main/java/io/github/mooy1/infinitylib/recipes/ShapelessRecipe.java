@@ -31,9 +31,11 @@ public final class ShapelessRecipe extends AbstractRecipe {
     }
 
     @Override
-    protected boolean equals(@Nonnull AbstractRecipe recipe) {
-        for (Map.Entry<String, Integer> entry : ((ShapelessRecipe) recipe).map.entrySet()) {
-            if (this.map.getOrDefault(entry.getKey(), 0) < entry.getValue()) {
+    protected boolean matches(@Nonnull AbstractRecipe input) {
+        Map<String, Integer> inputMap = ((ShapelessRecipe) input).map;
+
+        for (Map.Entry<String, Integer> entry : this.map.entrySet()) {
+            if (inputMap.getOrDefault(entry.getKey(), 0) < entry.getValue()) {
                 return false;
             }
         }
@@ -41,11 +43,11 @@ public final class ShapelessRecipe extends AbstractRecipe {
     }
 
     @Override
-    protected void consume(@Nonnull AbstractRecipe recipe) {
-        for (Map.Entry<String, Integer> entry : ((ShapelessRecipe) recipe).map.entrySet()) {
+    protected void consume(@Nonnull AbstractRecipe input) {
+        for (Map.Entry<String, Integer> entry : this.map.entrySet()) {
             int rem = entry.getValue();
 
-            for (FastItemStack item : getInput()) {
+            for (FastItemStack item : input.getRawInput()) {
 
                 if (item != null && item.getIDorType().equals(entry.getKey())) {
 

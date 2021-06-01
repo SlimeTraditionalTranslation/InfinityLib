@@ -13,7 +13,7 @@ public final class ShapedRecipe extends AbstractRecipe {
     @Override
     public int hashCode() {
         int hash = 0;
-        for (FastItemStack item : getInput()) {
+        for (FastItemStack item : getRawInput()) {
             if (item != null) {
                 hash += item.getIDorType().hashCode();
             } else {
@@ -24,9 +24,9 @@ public final class ShapedRecipe extends AbstractRecipe {
     }
 
     @Override
-    protected boolean equals(@Nonnull AbstractRecipe recipe) {
-        FastItemStack[] inputArr = getInput();
-        FastItemStack[] recipeArr = recipe.getInput();
+    protected boolean matches(@Nonnull AbstractRecipe input) {
+        FastItemStack[] inputArr = input.getRawInput();
+        FastItemStack[] recipeArr = getRawInput();
         for (int i = 0 ; i < inputArr.length ; i++) {
             FastItemStack in = inputArr[i];
             FastItemStack re = recipeArr[i];
@@ -42,9 +42,9 @@ public final class ShapedRecipe extends AbstractRecipe {
     }
 
     @Override
-    protected void consume(@Nonnull AbstractRecipe recipe) {
-        FastItemStack[] inputArr = getInput();
-        FastItemStack[] recipeArr = recipe.getInput();
+    protected void consume(@Nonnull AbstractRecipe input) {
+        FastItemStack[] inputArr = input.getRawInput();
+        FastItemStack[] recipeArr = getRawInput();
         for (int i = 0 ; i < inputArr.length ; i++) {
             FastItemStack in = inputArr[i];
             if (in != null) {

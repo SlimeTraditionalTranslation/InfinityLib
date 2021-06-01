@@ -6,16 +6,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import io.github.mooy1.infinitylib.configuration.AddonConfig;
 
 class TestAbstractAddon {
 
-    private static TestAddon addon;
+    private static MockAddon addon;
 
     @BeforeAll
     public static void load() {
         MockBukkit.mock();
-        addon = MockBukkit.load(TestAddon.class);
+        addon = MockBukkit.load(MockAddon.class);
     }
 
     @AfterAll
@@ -25,13 +24,7 @@ class TestAbstractAddon {
 
     @Test
     void testBugTrackerURL() {
-        Assertions.assertEquals("https://github.com/Mooy1/TestAddon/issues", addon.getBugTrackerURL());
+        Assertions.assertEquals("https://github.com/Mooy1/InfinityLib/issues", addon.getBugTrackerURL());
     }
-
-    //@Test
-    /*void testDefaultAutoUpdate() {
-        Assertions.assertTrue(addon.getConfig().getBoolean(addon.getAutoUpdatePath()));
-        Assertions.assertEquals(addon.getConfig().getComment(addon.getAutoUpdatePath()), AddonConfig.AUTO_UPDATE_COMMENT);
-    }*/
 
 }

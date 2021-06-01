@@ -3,6 +3,7 @@ package io.github.mooy1.infinitylib.configuration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,20 +28,18 @@ import io.github.mooy1.infinitylib.AbstractAddon;
  */
 public final class AddonConfig extends YamlConfiguration {
 
-    public static final String AUTO_UPDATE_COMMENT = "\n# This must be enabled to receive support!\n";
-
     private final Map<String, String> comments = new HashMap<>();
     private final AbstractAddon addon;
     private final File file;
 
-    public AddonConfig(AbstractAddon addon, String name) {
+    public AddonConfig(@Nonnull AbstractAddon addon, @Nonnull String name) {
         this.file = new File(addon.getDataFolder(), name);
         this.addon = addon;
         loadDefaults(name);
         reload();
     }
 
-    public int getInt(String path, int min, int max) {
+    public int getInt(@Nonnull String path, int min, int max) {
         int val = getInt(path);
         if (val < min || val > max) {
             set(path, val = getDefaults().getInt(path));
@@ -48,7 +47,7 @@ public final class AddonConfig extends YamlConfiguration {
         return val;
     }
 
-    public double getDouble(String path, double min, double max) {
+    public double getDouble(@Nonnull String path, double min, double max) {
         double val = getDouble(path);
         if (val < min || val > max) {
             set(path, val = getDefaults().getDouble(path));
@@ -65,15 +64,17 @@ public final class AddonConfig extends YamlConfiguration {
     }
 
     public void reload() {
-        if (this.file.exists()) {
-            try {
-                load(this.file);
-            } catch (InvalidConfigurationException e) {
-                this.addon.log(Level.SEVERE, "There was an error loading the config '" + this.file.getPath() + "', resetting to default!");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (this.file.exists()) try {
+            load(this.file);
+        } catch (Exception e) {
+            this.addon.log(Level.SEVERE, "There was an error loading the config '" + this.file.getPath() + "', resetting to default!");
         }
+        save();
+    }
+
+    @Nullable
+    public String getComment(String key) {
+        return this.comments.get(key);
     }
 
     @Nonnull
@@ -88,11 +89,6 @@ public final class AddonConfig extends YamlConfiguration {
         return "";
     }
 
-    @Nullable
-    public String getComment(String key) {
-        return this.comments.get(key);
-    }
-
     @Override
     public void loadFromString(@Nonnull String contents) throws InvalidConfigurationException {
         super.loadFromString(contents);
@@ -101,13 +97,12 @@ public final class AddonConfig extends YamlConfiguration {
                 set(key, null);
             }
         }
-        save();
     }
 
     @Nonnull
     @Override
     public String saveToString() {
-        options().copyDefaults(true).copyHeader(false);
+        options().copyDefaults(true).copyHeader(false).indent(2);
         String string = super.saveToString();
 
         String[] lines = string.split("\n");
@@ -131,68 +126,66 @@ public final class AddonConfig extends YamlConfiguration {
     }
 
     private void loadDefaults(String name) {
-        BufferedReader input = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(this.addon.getResource(name),
-                        () -> "No default config for " + name + "!"), Charsets.UTF_8));
-
-        StringBuilder yamlBuilder = new StringBuilder();
-        StringBuilder commentBuilder = new StringBuilder();
-        PathBuilder pathBuilder = new PathBuilder();
-
-        // Load comments
-        try {
-            String line;
-
-            while ((line = input.readLine()) != null) {
-                yamlBuilder.append(line).append('\n');
-
-                if (StringUtils.isBlank(line)) {
-                    continue;
-                }
-
-                if (line.contains("#")) {
-                    commentBuilder.append(line).append('\n');
-                    continue;
-                }
-
-                if (commentBuilder.length() == 0) {
-                    pathBuilder.append(line);
-                    continue;
-                }
-
-                // add comment and reset
-                commentBuilder.insert(0, '\n');
-                this.comments.put(pathBuilder.append(line).build(), commentBuilder.toString());
-                commentBuilder = new StringBuilder();
-            }
-
-            input.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
         YamlConfiguration defaults = new YamlConfiguration();
+        InputStream stream = this.addon.getResource(name);
 
-        // load values
-        try {
-            defaults.loadFromString(yamlBuilder.toString());
-        } catch (InvalidConfigurationException e) {
-            this.addon.log(Level.SEVERE, "There was an error loading the default config of '" + this.file.getPath() + "', report this to the developers!");
-            return;
+        if (stream == null) {
+            this.addon.log(Level.SEVERE, "No default config for " + name + "! Report this to the developers!");
+        } else try {
+            defaults.loadFromString(readDefaults(stream));
+        } catch (Exception e) {
+            this.addon.log(Level.SEVERE, "An " + e.getClass().getSimpleName() +
+                    " occurred while loading the default config of '" + name + "', report it to the developers!");
+            e.printStackTrace();
         }
 
-        // Auto Update
+        // Add an auto update thing just in case
         /*if (name.equals("config.yml")) {
             String path = this.addon.getAutoUpdatePath();
-            if (path != null) {
+            if (path != null && !defaults.contains(path)) {
                 defaults.set(path, true);
-                this.comments.put(path, AUTO_UPDATE_COMMENT);
             }
         }*/
 
         setDefaults(defaults);
+    }
+
+    private String readDefaults(@Nonnull InputStream inputStream) throws IOException {
+        BufferedReader input = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
+        StringBuilder yamlBuilder = new StringBuilder();
+        StringBuilder commentBuilder = new StringBuilder("\n");
+        PathBuilder pathBuilder = new PathBuilder();
+        String line;
+
+        while ((line = input.readLine()) != null) {
+            yamlBuilder.append(line).append('\n');
+
+            if (StringUtils.isBlank(line)) {
+                // Skip
+                continue;
+            }
+
+            if (line.contains("#")) {
+                // Add to comment of next path
+                commentBuilder.append(line).append('\n');
+                continue;
+            }
+
+            pathBuilder.append(line);
+
+            if (commentBuilder.length() != 1) {
+                // Add the comment to the path and clear
+                this.comments.put(pathBuilder.build(), commentBuilder.toString());
+                commentBuilder = new StringBuilder("\n");
+            } else if (pathBuilder.inMainSection()) {
+                // The main section should always have spaces between keys
+                this.comments.put(pathBuilder.build(), "\n");
+            }
+        }
+
+        input.close();
+
+        return yamlBuilder.toString();
     }
 
 }

@@ -2,50 +2,41 @@ package io.github.mooy1.infinitylib.recipes;
 
 import javax.annotation.Nonnull;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-
-import org.bukkit.inventory.ItemStack;
 
 import io.github.mooy1.infinitylib.items.FastItemStack;
 
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public abstract class AbstractRecipe {
 
-    private final FastItemStack[] input;
-    private AbstractRecipe recipe;
-    private ItemStack output;
+    private final FastItemStack[] rawInput;
+    private AbstractRecipe matchingRecipe;
+
+    @Override
+    public final boolean equals(Object recipe) {
+        if (recipe instanceof AbstractRecipe) {
+            return (this.matchingRecipe = (AbstractRecipe) recipe).matches(this);
+        }
+        return false;
+    }
 
     @Override
     public abstract int hashCode();
 
-    protected abstract boolean equals(@Nonnull AbstractRecipe recipe);
+    protected abstract boolean matches(@Nonnull AbstractRecipe input);
 
-    protected abstract void consume(@Nonnull AbstractRecipe recipe);
+    protected abstract void consume(@Nonnull AbstractRecipe input);
 
-    @Override
-    public final boolean equals(Object obj) {
-        return obj instanceof AbstractRecipe && equals(this.recipe = (AbstractRecipe) obj);
-    }
-    
-    public final void consumeInput() {
-        consume(this.recipe);
+    protected final FastItemStack[] getRawInput() {
+        return this.rawInput;
     }
 
-    public final FastItemStack[] getInput() {
-        return this.input;
+    final FastItemStack[] getRecipeInput() {
+        return this.matchingRecipe.rawInput;
     }
 
-    public final ItemStack getOutput() {
-        return this.recipe.output;
-    }
-
-    public final ItemStack cloneOutput() {
-        return getOutput().clone();
-    }
-
-    final void setOutput(@Nonnull ItemStack output) {
-        this.output = output;
+    final void consumeMatchingRecipe() {
+        this.matchingRecipe.consume(this);
     }
 
 }

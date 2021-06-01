@@ -13,7 +13,6 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -21,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
+import me.mrCookieSlime.Slimefun.api.inventory.DirtyChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.chat.ChatColors;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
@@ -112,23 +112,24 @@ public final class StackUtils {
     @Nonnull
     public static ItemStack addLore(@Nonnull ItemStack item, @Nonnull String... lines) {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.getLore();
-        if (lore == null) {
+        List<String> lore;
+
+        if (meta.hasLore()) {
+            lore = meta.getLore();
+
+            if (lore == null) {
+                lore = new ArrayList<>();
+            }
+        } else {
             lore = new ArrayList<>();
         }
+
         for (String line : lines) {
             lore.add(ChatColors.color(line));
         }
+
         meta.setLore(lore);
         item.setItemMeta(meta);
-        return item;
-    }
-
-    @Nonnull
-    public static ItemStack removeEnchants(@Nonnull ItemStack item) {
-        for (Enchantment e : item.getEnchantments().keySet()) {
-            item.removeEnchantment(e);
-        }
         return item;
     }
 
@@ -178,6 +179,14 @@ public final class StackUtils {
             }
         }
         return getInternalName(item);
+    }
+
+    public static ItemStack[] arrayFrom(@Nonnull DirtyChestMenu menu, int[] slots) {
+        ItemStack[] arr = new ItemStack[slots.length];
+        for (int i = 0 ; i < arr.length ; i++) {
+            arr[i] = menu.getItemInSlot(slots[i]);
+        }
+        return arr;
     }
 
 }
