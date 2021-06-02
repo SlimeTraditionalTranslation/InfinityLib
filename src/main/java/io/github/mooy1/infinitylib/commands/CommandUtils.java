@@ -22,9 +22,9 @@ public final class CommandUtils implements TabExecutor {
     public static void addSubCommands(AbstractAddon addon, String commandName, List<AbstractCommand> subCommands) {
         PluginCommand command = addon.getCommand(commandName);
 
-        /*if (command == null) {
+        if (command == null) {
             throw new IllegalArgumentException("No such command '" + commandName + "'! Report this to the developers!");
-        }*/
+        }
 
         subCommands = new ArrayList<>(subCommands);
         subCommands.add(new HelpCommand(subCommands, command));
