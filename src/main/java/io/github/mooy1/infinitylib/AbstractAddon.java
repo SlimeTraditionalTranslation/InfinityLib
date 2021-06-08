@@ -26,7 +26,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 //import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 
 /**
- * Extend this in your main plugin class
+ * Extend this in your main plugin class to access a bunch of utilities
  *
  * @author Mooy1
  */
@@ -54,9 +54,6 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
 
     @Override
     public final void onEnable() {
-        if (isEnabled()) {
-            throw new IllegalStateException("Do not call super.onEnable()!");
-        }
 
         // config
         this.config = new AddonConfig(this, "config.yml");
@@ -68,12 +65,6 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
 
         // global ticker
         scheduleRepeatingSync(() -> this.globalTick++, SlimefunPlugin.getTickerTask().getTickRate());
-
-        // commands
-        List<AbstractCommand> subCommands = setupSubCommands();
-        if (subCommands != null) {
-            CommandUtils.addSubCommands(this, getCommandName(), subCommands);
-        }
 
         // Enable
         try {
@@ -88,8 +79,17 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
                 e.printStackTrace();
             });
         }
+
+        // commands
+        List<AbstractCommand> subCommands = setupSubCommands();
+        if (subCommands != null) {
+            CommandUtils.addSubCommands(this, getCommandName(), subCommands);
+        }
     }
 
+    /**
+     * Checks for auto updates and sets up your metrics
+     */
     /*private void autoUpdateAndMetrics() {
         // check auto update
         //Boolean autoUpdate = null;
@@ -122,11 +122,19 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     @Override
     public final void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
+
         disable();
     }
 
+    /**
+     * Called when the plugin is enabled
+     */
     protected abstract void enable();
 
+
+    /**
+     * Called when the plugin is disabled
+     */
     protected abstract void disable();
 
     /**
