@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib.tests;
+package io.github.mooy1.infinitylib.persistence;
 
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -9,17 +9,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.persistence.PersistentDataContainerMock;
 import io.github.mooy1.infinitylib.mocks.MockAddon;
-import io.github.mooy1.infinitylib.persistence.PersistenceUtils;
-import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
+import io.github.mooy1.infinitylib.mocks.MockUtils;
 
-class TestPersistence {
+class TestPersistenceUtils {
+
+    private static ServerMock server;
 
     @BeforeAll
     public static void load() {
-        MockBukkit.mock();
+        server = MockBukkit.mock();
     }
 
     @AfterAll
@@ -29,13 +31,11 @@ class TestPersistence {
 
     @Test
     void testPersistentLocation() {
-        MockBukkit.load(SlimefunPlugin.class);
-
-        NamespacedKey key = new NamespacedKey(MockBukkit.load(MockAddon.class), "key");
+        NamespacedKey key = new NamespacedKey(MockUtils.mock(MockAddon.class), "key");
         PersistentDataContainer container = new PersistentDataContainerMock();
 
         WorldMock world = new WorldMock();
-        MockBukkit.getMock().addWorld(world);
+        server.addWorld(world);
 
         Location first = new Location(null, 1, 2, 3);
         Location second = new Location(world, 1, 2, 3);

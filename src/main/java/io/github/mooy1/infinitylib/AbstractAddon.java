@@ -3,6 +3,7 @@ package io.github.mooy1.infinitylib;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,13 +15,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import io.github.mooy1.infinitylib.commands.AbstractCommand;
 import io.github.mooy1.infinitylib.commands.CommandUtils;
 import io.github.mooy1.infinitylib.configuration.AddonConfig;
-import io.github.thebusybiscuit.slimefun4.api.MinecraftVersion;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 //import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
@@ -32,8 +33,9 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
  */
 public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon {
 
-    private final String bugTrackerURL = "https://github.com/" + getGithubPath().substring(0, getGithubPath().lastIndexOf('/')) + "/issues";
-
+    private final boolean notTesting;
+    //private boolean officialBuild;
+    private String bugTrackerURL;
     private AddonConfig config;
     private int globalTick;
 
@@ -41,7 +43,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
      * Main Constructor
      */
     public AbstractAddon() {
-
+        this.notTesting = true;
     }
 
     /**
@@ -50,79 +52,93 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     @ParametersAreNonnullByDefault
     public AbstractAddon(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
+        this.notTesting = false;
     }
 
     @Override
     public final void onEnable() {
 
-        // config
-        this.config = new AddonConfig(this, "config.yml");
-
-        // Don't do auto updates and metrics in tests
-        /*if (SlimefunPlugin.getMinecraftVersion() != MinecraftVersion.UNIT_TEST) {
-            autoUpdateAndMetrics();
+        // Check path
+        String githubPath = getGithubPath();
+        /*if (!githubPath.matches("\\w+/\\w+/\\w+")) {
+            throw new IllegalStateException("Invalid Github Path '" + githubPath + "', It should be 'User/Repo/branch'!");
         }*/
 
-        // global ticker
-        scheduleRepeatingSync(() -> this.globalTick++, SlimefunPlugin.getTickerTask().getTickRate());
+        // Create bug track url
+        String userSlashRepo = githubPath.substring(0, githubPath.lastIndexOf('/'));
+        this.bugTrackerURL = "https://github.com/" + userSlashRepo + "/issues";
+
+        // Check if its an official build
+        //this.officialBuild = getDescription().getVersion().matches("DEV - \\d+ \\(git \\w+\\)");
+
+        // Create Config
+        /*try {
+            this.config = new AddonConfig(this, "config.yml");
+        } catch (Throwable e) {
+            e.printStackTrace();
+            if (isOfficialBuild() && getAutoUpdatePath() != null) {
+                new GitHubBuildsUpdater(this, getFile(), githubPath).start();
+            }
+            return;
+        }*/
+
+        // Don't do metrics or updates unless its an official build
+        /*if (isOfficialBuild()) {
+
+            // Setup Metrics
+            Metrics metrics = null;
+            try {
+                metrics = setupMetrics();
+            } catch (Throwable e) {
+                if (isNotTesting()) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (getAutoUpdatePath() != null) {
+                boolean autoUpdate = this.config.getBoolean(getAutoUpdatePath());
+
+                // Add a metrics chart
+                if (metrics != null) {
+                    String autoUpdates = String.valueOf(autoUpdate);
+                    metrics.addCustomChart(new SimplePie("auto_updates", () -> autoUpdates));
+                }
+
+                // Update
+                if (autoUpdate) {
+                    new GitHubBuildsUpdater(this, getFile(), githubPath).start();
+                }
+            }
+        }*/
 
         // Enable
         try {
             enable();
         } catch (Throwable e) {
-            runSync(() -> {
-                log(Level.SEVERE,
-                        "The following error has occurred during " + getName() + "'s startup!",
-                        "Not all items and features will be available because of this!",
-                        "Report this on Github or Discord and make sure to update Slimefun!"
-                );
+            if (isNotTesting()) {
                 e.printStackTrace();
-            });
-        }
-
-        // commands
-        List<AbstractCommand> subCommands = setupSubCommands();
-        if (subCommands != null) {
-            CommandUtils.addSubCommands(this, getCommandName(), subCommands);
-        }
-    }
-
-    /**
-     * Checks for auto updates and sets up your metrics
-     */
-    /*private void autoUpdateAndMetrics() {
-        // check auto update
-        //Boolean autoUpdate = null;
-        if (getAutoUpdatePath() != null && getDescription().getVersion().startsWith("DEV - ")) {
-
-            autoUpdate = this.config.getBoolean(getAutoUpdatePath());
-
-            // update
-            if (autoUpdate) {
-                new GitHubBuildsUpdater(this, getFile(), getGithubPath()).start();
-            } else {
-                runSync(() -> log(
-                        "#######################################",
-                        "Auto Updates have been disabled for " + getName(),
-                        "You will receive no support for bugs",
-                        "Until you update to the latest version!",
-                        "#######################################"
-                ));
             }
         }
 
-        // metrics
-        //Metrics metrics = setupMetrics();
-        if (metrics != null && autoUpdate != null) {
-            String autoUpdates = autoUpdate.toString();
-            metrics.addCustomChart(new SimplePie("auto_updates", () -> autoUpdates));
+        // Setup commands after enable so that addon can setup stuff
+        try {
+            List<AbstractCommand> subCommands = setupSubCommands();
+            if (subCommands != null) {
+                CommandUtils.addSubCommands(this, getCommandName(), subCommands);
+            }
+        } catch (Throwable e) {
+            if (isNotTesting()) {
+                e.printStackTrace();
+            }
         }
-    }*/
+
+        // Create Global Ticker
+        scheduleRepeatingSync(() -> this.globalTick++, SlimefunPlugin.getTickerTask().getTickRate());
+    }
 
     @Override
     public final void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
-
         disable();
     }
 
@@ -130,7 +146,6 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
      * Called when the plugin is enabled
      */
     protected abstract void enable();
-
 
     /**
      * Called when the plugin is disabled
@@ -177,6 +192,14 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         return this.globalTick;
     }
 
+    public final boolean isNotTesting() {
+        return this.notTesting;
+    }
+
+    /*public final boolean isOfficialBuild() {
+        return this.officialBuild;
+    }*/
+
     @Nonnull
     @Override
     public final JavaPlugin getJavaPlugin() {
@@ -210,24 +233,26 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         // Do nothing, its covered in onEnable()
     }
 
-    public final NamespacedKey getKey(String s) {
-        return new NamespacedKey(this, s);
-    }
-
     public final void log(String... messages) {
         log(Level.INFO, messages);
     }
 
     public final void log(Level level, String... messages) {
+        Logger logger = getLogger();
         for (String msg : messages) {
-            getLogger().log(level, msg);
+            logger.log(level, msg);
         }
     }
 
     public final void registerListener(Listener... listeners) {
+        PluginManager manager = Bukkit.getPluginManager();
         for (Listener listener : listeners) {
-            Bukkit.getPluginManager().registerEvents(listener, this);
+            manager.registerEvents(listener, this);
         }
+    }
+
+    public final NamespacedKey getKey(String s) {
+        return new NamespacedKey(this, s);
     }
 
     public final void runSync(Runnable runnable) {

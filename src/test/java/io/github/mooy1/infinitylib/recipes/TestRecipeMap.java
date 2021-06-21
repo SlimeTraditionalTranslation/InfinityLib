@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib.tests;
+package io.github.mooy1.infinitylib.recipes;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -8,19 +8,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import io.github.mooy1.infinitylib.recipes.RecipeMap;
-import io.github.mooy1.infinitylib.recipes.RecipeOutput;
-import io.github.mooy1.infinitylib.recipes.ShapedRecipe;
-import io.github.mooy1.infinitylib.recipes.ShapelessRecipe;
-import io.github.mooy1.infinitylib.recipes.small.SmallRecipeMap;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
-import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
+import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 
-class TestRecipes {
+class TestRecipeMap {
 
     @BeforeAll
     public static void load() {
         MockBukkit.mock();
+        MockBukkit.load(SlimefunPlugin.class);
     }
 
     @AfterAll
@@ -29,38 +26,24 @@ class TestRecipes {
     }
 
     @Test
-    void testSmallRecipe() {
-        ItemStack out = new ItemStack(Material.DIAMOND);
-        ItemStack first = SlimefunItems.SILVER_INGOT.clone();
-        ItemStack second = new SlimefunItemStack(SlimefunItems.SILVER_INGOT, 2);
-        ItemStack third = new ItemStack(Material.STONE);
-
-        SmallRecipeMap<ItemStack> map = new SmallRecipeMap<>();
-        map.put(first, out);
-
-        Assertions.assertSame(out, map.getNoConsume(first));
-        Assertions.assertSame(out, map.getAndConsume(second));
-        Assertions.assertNull(map.get(third));
-        Assertions.assertEquals(1, second.getAmount());
-    }
-
-    @Test
     void testShapedRecipe() {
+        ItemStack stone = new ItemStack(Material.STONE);
+        stone.setItemMeta(stone.getItemMeta());
         ItemStack out = new ItemStack(Material.DIAMOND);
         ItemStack[] first = new ItemStack[] {
-                new ItemStack(Material.STONE), SlimefunItems.SILVER_INGOT.clone()
+                stone, SlimefunItems.SILVER_INGOT.clone()
         };
         ItemStack[] second = new ItemStack[] {
-                new ItemStack(Material.STONE), null
+                stone, null
         };
         ItemStack[] third = new ItemStack[] {
-                new ItemStack(Material.STONE, 2), SlimefunItems.SILVER_INGOT.clone()
+                new CustomItem(stone, 2), SlimefunItems.SILVER_INGOT.clone()
         };
         ItemStack[] fourth = new ItemStack[] {
-                new ItemStack(Material.STONE, 2), SlimefunItems.SILVER_INGOT.clone()
+                new CustomItem(stone, 2), SlimefunItems.SILVER_INGOT.clone()
         };
 
-        RecipeMap<ItemStack> map = new RecipeMap<>(ShapedRecipe::new);
+        RecipeMap<ItemStack> map = new RecipeMap<>(RecipeType.SHAPED);
         map.put(first, out);
         RecipeOutput<ItemStack> output = map.get(fourth);
 
@@ -79,21 +62,23 @@ class TestRecipes {
 
     @Test
     void testShapelessRecipe() {
+        ItemStack stone = new ItemStack(Material.STONE);
+        stone.setItemMeta(stone.getItemMeta());
         ItemStack out = new ItemStack(Material.DIAMOND);
         ItemStack[] first = new ItemStack[] {
-                new ItemStack(Material.STONE), SlimefunItems.SILVER_INGOT.clone()
+                stone, SlimefunItems.SILVER_INGOT.clone()
         };
         ItemStack[] second = new ItemStack[] {
-                new ItemStack(Material.STONE), null
+                stone, null
         };
         ItemStack[] third = new ItemStack[] {
-                new ItemStack(Material.STONE, 2), SlimefunItems.SILVER_INGOT.clone()
+                new CustomItem(stone, 2), SlimefunItems.SILVER_INGOT.clone()
         };
         ItemStack[] fourth = new ItemStack[] {
-                new ItemStack(Material.STONE), new ItemStack(Material.STONE), SlimefunItems.SILVER_INGOT.clone()
+                new CustomItem(stone, 2), SlimefunItems.SILVER_INGOT.clone()
         };
 
-        RecipeMap<ItemStack> map = new RecipeMap<>(ShapelessRecipe::new);
+        RecipeMap<ItemStack> map = new RecipeMap<>(RecipeType.SHAPELESS);
         map.put(first, out);
 
         Assertions.assertSame(out, map.getNoConsume(first));

@@ -1,4 +1,4 @@
-package io.github.mooy1.infinitylib.tests;
+package io.github.mooy1.infinitylib.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import io.github.mooy1.infinitylib.commands.CommandUtils;
 import io.github.mooy1.infinitylib.mocks.MockAddon;
 import io.github.mooy1.infinitylib.mocks.MockCommand;
+import io.github.mooy1.infinitylib.mocks.MockCommandAddon;
 
-class TestCommands {
+class TestCommandUtils {
 
     private static ServerMock server;
     private static MockAddon addon;
@@ -23,7 +23,7 @@ class TestCommands {
     @BeforeAll
     public static void load() {
         server = MockBukkit.mock();
-        addon = MockBukkit.load(MockAddon.class);
+        addon = MockBukkit.load(MockCommandAddon.class);
 
         CommandUtils.addSubCommands(addon, "mockaddon", Collections.singletonList(new MockCommand()));
     }
@@ -34,7 +34,13 @@ class TestCommands {
     }
 
     @Test
-    void testCommands() {
+    void testInfoAndHelp() {
+        server.executeConsole("mockaddon", "info").assertSucceeded();
+        server.executeConsole("mockaddon", "help").assertSucceeded();
+    }
+
+    @Test
+    void testCommandExecute() {
         server.execute("mockaddon", server.addPlayer(), "test").assertFailed();
         server.executeConsole("mockaddon", "test").assertResponse("test");
     }
@@ -42,6 +48,7 @@ class TestCommands {
     @Test
     void testTabComplete() {
         CommandMap map = server.getCommandMap();
+
         Assertions.assertFalse(map.tabComplete(server.addPlayer(), "mockaddon ").contains("test"));
         Assertions.assertTrue(map.tabComplete(server.getConsoleSender(), "mockaddon ").contains("test"));
     }
