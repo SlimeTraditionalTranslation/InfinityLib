@@ -145,12 +145,12 @@ public final class AddonConfig extends YamlConfiguration {
         }
 
         // Add an auto update thing just in case
-        /*if (name.equals("config.yml")) {
+        if (name.equals("config.yml")) {
             String path = this.addon.getAutoUpdatePath();
             if (path != null && !this.defaults.contains(path)) {
                 this.defaults.set(path, true);
             }
-        }*/
+        }
 
         reload();
     }

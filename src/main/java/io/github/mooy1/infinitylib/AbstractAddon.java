@@ -69,7 +69,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         this.bugTrackerURL = "https://github.com/" + userSlashRepo + "/issues";
 
         // Check if its an official build
-        //this.officialBuild = getDescription().getVersion().matches("DEV - \\d+ \\(git \\w+\\)");
+        this.officialBuild = getDescription().getVersion().matches("DEV - \\d+ \\(git \\w+\\)");
 
         // Create Config
         try {
