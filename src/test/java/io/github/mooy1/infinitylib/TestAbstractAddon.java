@@ -30,20 +30,20 @@ class TestAbstractAddon {
         MockBukkit.unmock();
     }
 
-    //@Test
-    /*void testOfficialBuild() {
+    @Test
+    void testOfficialBuild() {
         Assertions.assertFalse(addon.isOfficialBuild());
-    }*/
+    }
 
     @Test
     void testNotTesting() {
         Assertions.assertFalse(addon.isNotTesting());
     }
 
-    //@Test
-    /*void testMainConfig() {
+    @Test
+    void testMainConfig() {
         Assertions.assertNotNull(addon.getConfig());
-    }*/
+    }
 
     @Test
     void testGlobalTick() {

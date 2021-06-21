@@ -9,8 +9,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-//import org.bstats.bukkit.Metrics;
-//import org.bstats.charts.SimplePie;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
@@ -24,7 +24,7 @@ import io.github.mooy1.infinitylib.commands.CommandUtils;
 import io.github.mooy1.infinitylib.configuration.AddonConfig;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
-//import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
+import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 
 /**
  * Extend this in your main plugin class to access a bunch of utilities
@@ -34,7 +34,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin;
 public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon {
 
     private final boolean notTesting;
-    //private boolean officialBuild;
+    private boolean officialBuild;
     private String bugTrackerURL;
     private AddonConfig config;
     private int globalTick;
@@ -60,9 +60,9 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
 
         // Check path
         String githubPath = getGithubPath();
-        /*if (!githubPath.matches("\\w+/\\w+/\\w+")) {
+        if (!githubPath.matches("\\w+/\\w+/\\w+")) {
             throw new IllegalStateException("Invalid Github Path '" + githubPath + "', It should be 'User/Repo/branch'!");
-        }*/
+        }
 
         // Create bug track url
         String userSlashRepo = githubPath.substring(0, githubPath.lastIndexOf('/'));
@@ -72,7 +72,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         //this.officialBuild = getDescription().getVersion().matches("DEV - \\d+ \\(git \\w+\\)");
 
         // Create Config
-        /*try {
+        try {
             this.config = new AddonConfig(this, "config.yml");
         } catch (Throwable e) {
             e.printStackTrace();
@@ -80,10 +80,10 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
                 new GitHubBuildsUpdater(this, getFile(), githubPath).start();
             }
             return;
-        }*/
+        }
 
         // Don't do metrics or updates unless its an official build
-        /*if (isOfficialBuild()) {
+        if (isOfficialBuild()) {
 
             // Setup Metrics
             Metrics metrics = null;
@@ -109,7 +109,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
                     new GitHubBuildsUpdater(this, getFile(), githubPath).start();
                 }
             }
-        }*/
+        }
 
         // Enable
         try {
@@ -161,10 +161,10 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     /**
      * Return your metrics or null
      */
-    //@Nullable
-    /*protected Metrics setupMetrics() {
+    @Nullable
+    protected Metrics setupMetrics() {
         return null;
-    }*/
+    }
 
     /**
      * return your sub commands, use Arrays.asList(Commands...) or null for none.
@@ -185,8 +185,8 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
     /**
      * Override this if you have a different path, or null for no auto updates
      */
-    //@Nullable
-    //public abstract String getAutoUpdatePath();
+    @Nullable
+    public abstract String getAutoUpdatePath();
 
     public final int getGlobalTick() {
         return this.globalTick;
@@ -196,9 +196,9 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
         return this.notTesting;
     }
 
-    /*public final boolean isOfficialBuild() {
+    public final boolean isOfficialBuild() {
         return this.officialBuild;
-    }*/
+    }
 
     @Nonnull
     @Override

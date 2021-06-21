@@ -22,11 +22,11 @@ public final class MockErrorAddon extends MockAddon {
         throw new Error();
     }
 
-    //@Nullable
-    //@Override
-    /*protected Metrics setupMetrics() {
+    @Nullable
+    @Override
+    protected Metrics setupMetrics() {
         throw new Error();
-    }*/
+    }
 
     @Nullable
     @Override
