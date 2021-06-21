@@ -19,11 +19,11 @@ public final class MockMetricsAddon extends MockAddon {
         super(loader, description, dataFolder, file);
     }
 
-    @Nullable
-    @Override
-    protected Metrics setupMetrics() {
+    //@Nullable
+    //@Override
+    /*protected Metrics setupMetrics() {
         this.metricsCreated = true;
         return super.setupMetrics();
-    }
+    }*/
 
 }

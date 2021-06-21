@@ -30,9 +30,9 @@ public class MockAddon extends AbstractAddon {
 
     }
 
-    @Nullable
-    @Override
-    public String getAutoUpdatePath() {
+    //@Nullable
+    //@Override
+    /*public String getAutoUpdatePath() {
         return null;
     }*/
 
