@@ -16,16 +16,18 @@ final class InfoCommand extends SubCommand {
     private final String[] message;
 
     InfoCommand(SlimefunAddon addon) {
-        super("info", "Gives addon and slimefun version and discord links");
+        super("info", "提供此附加和Slimefun版本與Discord連結");
         Slimefun slimefun = Slimefun.instance();
         message = new String[] {
                 "",
-                ChatColors.color("&b" + addon.getName() + " Info"),
-                ChatColors.color("&bSlimefun Version: &7" + (slimefun == null ? "null" : slimefun.getPluginVersion())),
+                ChatColors.color("&b" + addon.getName() + " 資訊"),
+                ChatColors.color("&bSlimefun 版本: &7" + (slimefun == null ? "null" : slimefun.getPluginVersion())),
                 ChatColors.color("&bSlimefun Discord: &7Discord.gg/slimefun"),
-                ChatColors.color("&bAddon Version: &7" + addon.getPluginVersion()),
-                ChatColors.color("&bAddon Community: &7Discord.gg/SqD3gg5SAU"),
+                ChatColors.color("&b&3Slimefun 繁體中文版 Discord: &7Discord.gg/GF4CwjFXT9"),
+                ChatColors.color("&b附加版本: &7" + addon.getPluginVersion()),
+                ChatColors.color("&b官方附加社群: &7Discord.gg/SqD3gg5SAU"),
                 ChatColors.color("&bGithub: &7" + addon.getBugTrackerURL()),
+                ChatColors.color("&4&l此為非官方版 &f| &4&lThis is not Official Version"),
                 ""
         };
     }
