@@ -19,7 +19,7 @@ import io.github.mooy1.infinitylib.commands.AddonCommand;
 import io.github.mooy1.infinitylib.common.Scheduler;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.GitHubBuildsUpdater;
+import io.github.bakedlibs.dough.updater.GitHubBuildsUpdaterTR;
 
 /**
  * Extend this in your main plugin class to access a bunch of utilities
@@ -31,7 +31,7 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
 
     private static AbstractAddon instance;
 
-    private final GitHubBuildsUpdater updater;
+    private final GitHubBuildsUpdaterTR updater;
     private final Environment environment;
     private final String githubUserName;
     private final String githubRepo;
@@ -51,8 +51,8 @@ public abstract class AbstractAddon extends JavaPlugin implements SlimefunAddon 
      * Live Addon Constructor
      */
     public AbstractAddon(String githubUserName, String githubRepo, String autoUpdateBranch, String autoUpdateKey) {
-        boolean official = getDescription().getVersion().matches("DEV - \\d+ \\(git \\w+\\)");
-        this.updater = official ? new GitHubBuildsUpdater(this, getFile(),
+        boolean official = getDescription().getVersion().matches("EFI - \\d+ \\(git \\w+\\)");
+        this.updater = official ? new GitHubBuildsUpdaterTR(this, getFile(),
                 githubUserName + "/" + githubRepo + "/" + autoUpdateBranch) : null;
         this.environment = Environment.LIVE;
         this.githubUserName = githubUserName;

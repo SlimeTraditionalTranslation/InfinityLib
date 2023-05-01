@@ -21,13 +21,13 @@ final class InfoCommand extends SubCommand {
         message = new String[] {
                 "",
                 ChatColors.color("&b" + addon.getName() + " 資訊"),
-                ChatColors.color("&bSlimefun 版本: &7" + (slimefun == null ? "null" : slimefun.getPluginVersion())),
-                ChatColors.color("&bSlimefun Discord: &7Discord.gg/slimefun"),
-                ChatColors.color("&b&3Slimefun 繁體中文版 Discord: &7Discord.gg/GF4CwjFXT9"),
-                ChatColors.color("&b附加版本: &7" + addon.getPluginVersion()),
-                ChatColors.color("&b官方附加社群: &7Discord.gg/SqD3gg5SAU"),
-                ChatColors.color("&bGithub: &7" + addon.getBugTrackerURL()),
-                ChatColors.color("&4&l此為非官方版 &f| &4&lThis is not Official Version"),
+                ChatColors.color("&bSlimefun 版本：&7" + (slimefun == null ? "null" : slimefun.getPluginVersion())),
+                ChatColors.color("&bSlimefun Discord：&7Discord.gg/slimefun"),
+                ChatColors.color("&b&3Slimefun 繁體中文版 Discord：&7Discord.gg/GF4CwjFXT9"),
+                ChatColors.color("&b附加版本：&7" + addon.getPluginVersion()),
+                ChatColors.color("&b官方附加社群：&7Discord.gg/SqD3gg5SAU"),
+                ChatColors.color("&bGithub：&7" + addon.getBugTrackerURL()),
+                ChatColors.color("&4&l此為非官方版&f｜&4&lThis is not Official Version"),
                 ""
         };
     }

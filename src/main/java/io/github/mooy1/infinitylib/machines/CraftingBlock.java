@@ -55,13 +55,13 @@ public class CraftingBlock extends MenuBlock {
                     onSuccessfulCraft(menu, output);
                     menu.pushItem(output, layout.outputSlots());
                     recipe.consume(input);
-                    p.sendMessage(ChatColor.GREEN + "成功製作: " + ItemUtils.getItemName(output));
+                    p.sendMessage(ChatColor.GREEN + "成功製作：" + ItemUtils.getItemName(output));
                 } else {
-                    p.sendMessage(ChatColor.GOLD + "空間不足!");
+                    p.sendMessage(ChatColor.GOLD + "空間不足！");
                 }
             }
         } else {
-            p.sendMessage(ChatColor.RED + "未知配方!");
+            p.sendMessage(ChatColor.RED + "未知配方！");
         }
     }
 
