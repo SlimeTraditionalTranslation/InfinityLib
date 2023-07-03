@@ -16,7 +16,7 @@ final class InfoCommand extends SubCommand {
     private final String[] message;
 
     InfoCommand(SlimefunAddon addon) {
-        super("info", "提供此附加和Slimefun版本與Discord連結");
+        super("info", "提供本附加的 Slimefun 版本與 Discord 連結");
         Slimefun slimefun = Slimefun.instance();
         message = new String[] {
                 "",

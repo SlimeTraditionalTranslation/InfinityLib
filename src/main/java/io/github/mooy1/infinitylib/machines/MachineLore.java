@@ -37,7 +37,7 @@ public final class MachineLore {
 
     @Nonnull
     public static String speed(int speed) {
-        return PREFIX + "速度: &b" + speed + 'x';
+        return PREFIX + "速度：&b" + speed + 'x';
     }
 
     @Nonnull
